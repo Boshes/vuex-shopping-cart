@@ -1,18 +1,19 @@
 <template>
   <div>
-      <h1>Product List</h1> {{loading}}
+      <h1>Product List</h1>
       <h3 v-if='loading'>
         Loading
       </h3>
       <ul v-else>
-        <li v-for='product in products'>{{product.title}} {{product.price}} - {{product.inventory}}</li>
+        <li v-for='product in products'>
+          {{ product.title }} - {{ product.price | currency }} - {{ product.inventory }} Units
+          <button @click='addProductToCart(product)'>Add to cart</button>
+        </li>
       </ul>
   </div>
 </template>
 
 <script>
-import store from '@/store/index'
-
 export default {
   data () {
     return {
@@ -21,13 +22,19 @@ export default {
   },
   computed: {
     products () {
-      return store.getters.availableProducts
+      return this.$store.getters.availableProducts
     }
   },
+
+  methods: {
+    addProductToCart (product) {
+      this.$store.dispatch('addProductToCart', product)
+    }
+  },
+
   created () {
     this.loading = true
-    console.log(this.loading)
-    store.dispatch('fetchProducts')
+    this.$store.dispatch('fetchProducts')
       .then(() => this.loading = false)
   }
 }
